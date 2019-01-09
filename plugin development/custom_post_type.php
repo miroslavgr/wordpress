@@ -1,7 +1,16 @@
 <?php
 /*
-    This file is about custom post type create and use.
+	This file is about custom post type create and use.
 
+	5 default types
+	post
+	page
+	attachment - media uploaded and attached to post type entries
+	revision - revision ofa post type used as backup and can be restored
+	nav menus - Menu items added to a nav menu
+
+	always use init on register
+	
     Overall functions 
 */
 register_post_type( 'type_name', ['public' => 'true'] );// 1st param name of type
@@ -110,5 +119,30 @@ function example_posttype_save($post_id)
 add_action('save_post','example_posttype_save');
 
 
+//show all posts with a shortcode
+function display_custom_posts()
+{
+    $args = array(
+        'posts_per_page'=> '-1',//all
+        'post_type'=>'products',//post type name
+        'tax_query'=> array(//posts iassigned with a particular taxonomy
+            'taxonomy'=>'category', //type taxonomy
+            'field' => 'slug',
+            'terms' => 'specials' //term
+        )
+    );
 
+    $allPosts = new WP_Query($args);
+	
+    $content = " ";	
+    while($allPosts->have_posts()):
+        $allPosts->the_post();
+        $content .= the_title();
+        $content .= the_content();
+    endwhile;
+
+    wp_reset_postdata();
+    return $content
+}
+add_shortcode('show_all','display_custom_posts')
 ?>
