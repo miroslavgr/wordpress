@@ -1,0 +1,63 @@
+
+add_action('widgets_init','mg_widgetexample_register_widgets');
+
+function mg_widgetexample_register_widgets()
+{
+    register_widget('mg_widget_cl');
+}
+
+class mg_widget_cl extends WP_Widget{
+    
+    //constructor
+    function mg_widget_cl()
+    {
+        $widget_ops= array('classname'=>'html_class',
+            'description'=>'Miroslav Georgiev custom widget'
+        );
+        $this->WP_Widget('html_id','Miroslav Georgiev name',$widget_ops);
+    }
+    
+    //settings
+    function form($instance)
+    {
+        $defaults = array('first_name'=>'Miroslav', 'second_name'=>'Georgiev','song'=>'');
+        $instance = wp_parse_args((array) $instance,$defaults);
+        $fname = $instance['first_name'];
+        $sname = $instance['second_name'];
+        $song = $instance['song'];
+        ?>
+        <p>First Name: <input class="widefat" name="<?php echo $this->get_field_name('first_name')?>" type="text"
+        value="<?php echo esc_attr($fname)?>" /></p>
+        <p>Second Name: <input class="widefat" name="<?php echo $this->get_field_name('second_name')?>" type="text"
+        value="<?php echo esc_attr($sname)?>" /></p>
+        <p>Song: <input class="widefat" name="<?php echo $this->get_field_name('song')?>" type="text"
+        value="<?php echo esc_attr($song)?>" /></p>
+        <?php 
+    }
+    
+    function update($new_instance, $old_instance){
+        
+        $instance = $old_instance;
+        $instance['first_name'] = strip_tags($new_instance['first_name']);
+        $instance['second_name'] = strip_tags($new_instance['second_name']);
+        $instance['song'] = strip_tags($new_instance['song']);
+        
+        return $instance;
+    }
+    
+    function widget($args, $instance)
+    {
+        extract($args);// hold before widget/title variables
+        
+        echo $before_widget;
+        $fname = $instance['first_name'];
+        $sname = $instance['second_name'];
+        $song = empty( $instance['song']) ? '&nbsp;' : $instance['song'];
+        
+        echo $before_title.$fname.$after_title;
+        echo '<p> First Name'.$fname.'</p>';
+        echo '<p> Second Name'.$sname.'</p>';
+        echo '<p> Song'.$song.'</p>';
+        echo $after_widget;
+    }
+}
