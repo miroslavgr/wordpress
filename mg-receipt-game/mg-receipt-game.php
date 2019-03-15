@@ -56,8 +56,10 @@ function mg_rg_winners_html()
 
 function mg_rg_activate()
 {
-    global $wpdb;
+   global $wpdb;
+    require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
     
+    //registered
     $table_name = $wpdb->prefix . "mg_rg_register"; 
     $charset_collate = $wpdb->get_charset_collate();
     
@@ -69,11 +71,61 @@ function mg_rg_activate()
     email varchar(255) NOT NULL , 
     mobile int NOT NULL ,
      PRIMARY KEY (id), UNIQUE (receipt)
-    ) $charset_collate;";
+    )$charset_collate";
     
-    require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
-    dbDelta( $sql );
+    //prizes
+   /* $table_name2 = $wpdb->prefix . "mg_rg_prizes";
+    $charset_collate2 = $wpdb->get_charset_collate();
+    
+    $sql2 = "CREATE TABLE IF NOT EXISTS $table_name (
+    id int NOT NULL AUTO_INCREMENT ,
+    receipt int NOT NULL ,
+    price float NOT NULL ,
+    name varchar(255) NOT NULL ,
+    email varchar(255) NOT NULL ,
+    mobile int NOT NULL ,
+     PRIMARY KEY (id), UNIQUE (receipt)
+    )$charset_collate";*/
+    
+    //winners
+    $table_name3 = $wpdb->prefix . "mg_rg_winners";
+    $charset_collate3 = $wpdb->get_charset_collate();
+    
+    //to do add foreign key prize_id to prizes
+    $sql3 = "CREATE TABLE IF NOT EXISTS $table_name3 (
+    id int NOT NULL AUTO_INCREMENT ,
+    name varchar(255) NOT NULL ,
+    email varchar(255) NOT NULL ,
+    mobile int NOT NULL ,
+    prize_id int NOT NULL,
+    PRIMARY KEY (id)
+    )$charset_collate";
+    
+   //$bool = $wpdb->query($sql);
+   
+   dbDelta( $sql ); //registered
+  // dbDelta( $sql2 ); //prizes
+   dbDelta( $sql3 ); //winners
 }
 register_activation_hook(__FILE__,'mg_rg_activate'); //1st param is the main plugin file
+
+//insert into table example
+function jal_install_data() {
+    global $wpdb;
+    
+    $welcome_name = 'Mr. WordPress';
+    $welcome_text = 'Congratulations, you just completed the installation!';
+    
+    $table_name = $wpdb->prefix . 'liveshoutbox';
+    
+    $wpdb->insert(
+        $table_name,
+        array(
+            'time' => current_time( 'mysql' ),
+            'name' => $welcome_name,
+            'text' => $welcome_text,
+        )
+        );
+}
 
 ?>
