@@ -36,12 +36,185 @@ function mg_rg_init_menu()
         );
 }
 
-
 add_action('admin_menu','mg_rg_init_menu');
 
 function mg_rg_main_menu_html()
 {
-    echo "main page";   
+    global $wpdb;
+    $registeredArr = false;
+    
+    $table_name = $wpdb->prefix . "mg_rg_register"; 
+    
+    /*Start adding new receipt */
+    if(array_key_exists('submit_new_register',$_POST))
+    {
+        if(isset($_POST["receipt_number"])&&!empty($_POST["receipt_number"])
+            &&isset($_POST["receipt_total"])&&!empty($_POST["receipt_total"])
+            &&isset($_POST["names"])&&!empty($_POST["names"])
+            &&isset($_POST["email"])&&!empty($_POST["email"])
+            &&isset($_POST["phone"])&&!empty($_POST["phone"]))
+        {
+            $receipt_number = $_POST["receipt_number"];
+            $receipt_total = $_POST["receipt_total"];
+            $names = $_POST["names"];
+            $email = $_POST["email"];
+            $phone = $_POST["phone"];
+            
+            $boolin = $wpdb->insert(
+                $table_name,
+                array(
+                    'receipt' => $receipt_number,
+                    'price' => $receipt_total,
+                    'name' => $names,
+                    'email' => $email,
+                    'mobile' => $phone
+                )
+                );
+            if($boolin != false)
+            {
+                 ?>
+                <div id="setting-error-settings-updated" class="updated_settings_error notice is-dismissible"><strong>Касовата бележка е добавена успешно.</strong></div>
+                <?php
+            }
+            else{     
+                 ?>
+                <div id="setting-error-settings-updated" class="updated_settings_error notice is-dismissible"><strong>Касовата бележка не е добавена.</strong></div>
+                <?php       
+            }
+        }
+        else if(isset($_POST["receipt_number"])||isset($_POST["receipt_total"])||isset($_POST["names"])
+            ||isset($_POST["email"])||isset($_POST["phone"]))
+        {
+            ?>
+            <div id="setting-error-settings-updated" class="updated_settings_error notice is-dismissible"><strong>Въведете всички полета!</strong></div>
+            <?php   
+        }
+    }
+    /*End adding new receipt */
+    
+    /*Start delete by receipt */
+    if(array_key_exists('submit_receipt_delete',$_POST)&&isset($_POST["receipt_delete"])&&!empty($_POST["receipt_delete"]))
+    {
+        $receipt_del = $_POST["receipt_delete"];
+        $bool_rep_del = $wpdb->delete( $table_name, array( 'receipt' => $receipt_del ) );
+        if($bool_rep_del)
+        {
+            ?>
+            <div id="setting-error-settings-updated" class="updated_settings_error notice is-dismissible"><strong>Касовата билежка е изтрита успешно!</strong></div>
+            <?php
+        }
+        else
+        {
+            ?>
+            <div id="setting-error-settings-updated" class="updated_settings_error notice is-dismissible"><strong>Касовата билежка не е изтрита!</strong></div>
+            <?php
+        }
+    }
+    /*End delete by receipt*/
+    
+    /*Start search by phone*/
+    if(array_key_exists('submit_phone_search',$_POST)&&isset($_POST["phone_search"])&&!empty($_POST["phone_search"]))
+    {
+       $phone_search = $_POST["phone_search"];
+            $registeredArr = $wpdb->get_results(
+                "
+                	SELECT *
+                	FROM $table_name
+                    WHERE mobile=$phone_search
+            	");
+        
+       
+    }/*End search by phone */
+    else 
+    {
+        if(array_key_exists('submit_biggest_price',$_POST))
+        {
+            $registeredArr = $wpdb->get_results(
+                "
+        	SELECT *
+        	FROM $table_name
+            ORDER BY price DESC");
+        
+         }
+         elseif(array_key_exists('submit_lowest_price',$_POST))
+         {
+             $registeredArr = $wpdb->get_results(
+                 "
+        	SELECT *
+        	FROM $table_name
+            ORDER BY price ASC");
+
+         }
+        else
+        {
+            $registeredArr = $wpdb->get_results(
+            "
+            	SELECT *
+            	FROM $table_name
+                ORDER BY id DESC
+        	");
+        }
+    }
+    
+   
+    ?>
+    
+    <div class="wrap">
+   	<h2>Регистрирани касови бележки</h2><br>
+   	<form method="post" action="">	
+	<label for="phone_search">Търси по телефон: 359 </label>
+   	<input type="number" value="" id="phone_search" name="phone_search">
+   	<input type="submit" name="submit_phone_search" class="button button-primary" value="Намери резултати">
+   	</form> <br>	
+   	<form method="post" action="">	
+	<label for="phone_search">Изтрий по номер на касова бележка: </label>
+   	<input type="number" value="" id="receipt_delete" name="receipt_delete">
+   	<input type="submit" name="submit_receipt_delete" class="button button-primary" value="Изтрий"><br><br>
+   	<input type="submit" name="submit_biggest_price" class="button button-primary" value="Сортирай по най-висока цена">
+   	<input type="submit" name="submit_lowest_price" class="button button-primary" value="Сортирай по най-ниска цена">
+   	</form> <br>	
+   	<form method="post" action="">	
+   	<h4>Добвяне на нова касова бележка - Въведи всички полета</h4>
+   	<label for="receipt_number" class="form__label">Номер от касова бележка: </label>
+   	<input type="number" value="" id="receipt_number" min="0" name="receipt_number"> 	
+   	<label for="receipt_total">Сума: </label>
+   	<input type="text" value="" id="receipt_total" min="0" step="0.01" name="receipt_total">
+   	<label for="names">Три имена: </label>
+   	<input type="text" value="" id="names" name="names"> 	
+   	<label for="phone">Телефон: 359 </label>
+   	<input type="number" value="" id="phone" name="phone"> 	
+   	<label for="email">Имейл: </label>
+   	<input type="email" value="" id="email" name="email">   	
+   	<input type="submit" name="submit_new_register" class="button button-primary" value="Добави">
+   	</form><br>
+   	<table class="widefat">
+   	<thead> <tr> <th>Id</th> <th>Receipt</th><th>Price</th> <th>Name</th> <th>Email</th> <th>Mobile</th></tr> </thead>
+   	<tfoot> <tr> <th>Id</th> <th>Receipt</th><th>Price</th> <th>Name</th> <th>Email</th> <th>Mobile</th></tr> </tfoot>
+   	<tbody>
+	<?php 
+	if($registeredArr)
+	{
+	    foreach ( $registeredArr as $receipt )
+	    {
+	        echo "<tr>";
+	        echo "<td>$receipt->id </td>";
+	        echo "<td>$receipt->receipt </td>";
+	        echo "<td>$receipt->price </td>";
+	        echo "<td>$receipt->name </td>";
+	        echo "<td>$receipt->email </td>";
+	        echo "<td>$receipt->mobile </td>";
+	        echo "</tr>";
+	    }
+	}
+	
+	?>
+   	
+   	</tbody>
+   	
+   	</table>
+   	
+   	</div>
+    <?php
 }
 
 function mg_rg_prizes_html()
@@ -109,23 +282,75 @@ function mg_rg_activate()
 }
 register_activation_hook(__FILE__,'mg_rg_activate'); //1st param is the main plugin file
 
-//insert into table example
-function jal_install_data() {
-    global $wpdb;
-    
-    $welcome_name = 'Mr. WordPress';
-    $welcome_text = 'Congratulations, you just completed the installation!';
-    
-    $table_name = $wpdb->prefix . 'liveshoutbox';
-    
-    $wpdb->insert(
-        $table_name,
-        array(
-            'time' => current_time( 'mysql' ),
-            'name' => $welcome_name,
-            'text' => $welcome_text,
-        )
-        );
+
+/* Shortcodes section */
+
+function mg_rg_shortocdes()
+{
+    add_shortcode('display_input_form', 'mg_rg_display_input_html');
 }
+
+add_action('init', 'mg_rg_shortocdes');
+
+function mg_rg_display_input_html()
+{
+    ?>
+    
+    <form method="post" action="https://www.rois.bg/igra-hrrupss/process#anchor-game" class="form js-game-form">
+    <ul>
+    <li class="form__row">
+    <label for="receipt_number" >Въведи номер от касова бележка: *</label>
+    <br>
+    <input type="number" value="" min="0" id="receipt_number" name="receipt_number">
+    </li>
+    <li class="form__row">
+    <label for="receipt_total" >Въведи сумата от задължително закупен продукт, обозначена на касовата бележка *</label>
+     <br>
+    <input type="text" value="" min="0" step="0.01" id="receipt_total" name="receipt_total">
+    </li>
+    
+    <li>
+    <label for="names">Три имена: *</label> <br>
+    <input type="text" value="" id="names" name="names">
+    </li>
+    <li class="form__row">
+    <label for="phone">МОБИЛЕН НОМЕР: *</label> <br>
+    <input type="number" value="" id="phone" name="phone">
+    </li>
+    <li class="form__row">
+    <label for="email" class="form__label">E-MAIL: *</label> <br>
+    <input type="email" value="" id="email" name="email">
+    </li>
+    
+    <li>
+    <label class="checkbox">
+    <input type="checkbox" name="agree_1">
+    <span class="checkbox__text">Потвърди, че ще запазиш касовата бележка.</span>
+    </label>
+    </li>
+    
+    <li class="form__row form__row_compact">
+    <label class="checkbox">
+    <input type="checkbox" name="agree_2" class="checkbox__input" data-error="Полето е задължително">
+    <span class="checkbox__text">Ако си съгласен/-а с <a href="https://www.rois.bg/igra-hrrupss#tab-terms" target="_blank">Официалните правила на играта</a> и желаеш да участваш, моля, отбележи в квадратчето.</span>
+    </label>
+    </li>
+    <li class="form__row">
+    <label class="checkbox parsley-error">
+    <input type="checkbox" name="agree_3" class="checkbox__input" data-error="Полето е задължително">
+    <span class="checkbox__text">Имам навършени 18 години.</span>
+    </label>
+    </li>
+    
+    <li class="form__row -align-center">
+    <button type="submit" >регистрирай касова бележка</button>
+    </li>
+    </ul>
+    </form>
+    
+    <?php 
+   // return "<h1> shorttttt </h1>";
+}
+
 
 ?>
