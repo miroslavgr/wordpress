@@ -40,6 +40,10 @@ add_action('admin_menu','mg_rg_init_menu');
 
 function mg_rg_main_menu_html()
 {
+    if(!is_admin())
+    {
+        exit;
+    }
     global $wpdb;
     $registeredArr = false;
     
@@ -294,16 +298,72 @@ add_action('init', 'mg_rg_shortocdes');
 
 function mg_rg_display_input_html()
 {
-    ?>
     
-    <form method="post" action="https://www.rois.bg/igra-hrrupss/process#anchor-game" class="form js-game-form">
-    <ul>
-    <li class="form__row">
+    global $wpdb;
+    $table_name = $wpdb->prefix . "mg_rg_register";
+    $addedRep = 0;
+    /*Start adding new receipt */
+  
+        if(isset($_POST["receipt_number"])&&!empty($_POST["receipt_number"])
+            &&isset($_POST["receipt_total"])&&!empty($_POST["receipt_total"])
+            &&isset($_POST["names"])&&!empty($_POST["names"])
+            &&isset($_POST["email"])&&!empty($_POST["email"])
+            &&isset($_POST["phone"])&&!empty($_POST["phone"]))
+        {
+            $receipt_number = $_POST["receipt_number"];
+            $receipt_total = $_POST["receipt_total"];
+            $names = $_POST["names"];
+            $email = $_POST["email"];
+            $phone = $_POST["phone"];
+            
+            $boolin = $wpdb->insert(
+                $table_name,
+                array(
+                    'receipt' => $receipt_number,
+                    'price' => $receipt_total,
+                    'name' => $names,
+                    'email' => $email,
+                    'mobile' => $phone
+                )
+                );
+            if($boolin != false)
+            {
+                $addedRep = 1;
+            }
+            else{     
+                $addedRep = 2;
+            }
+        }
+    
+    
+    
+    $buffer ='
+<script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
+		crossorigin="anonymous"></script>
+
+		<!-- Validation plugin -->
+
+		<script src="https://cdn.jsdelivr.net/npm/jquery-validation@1.17.0/dist/jquery.validate.min.js"></script>
+		<script src="https://cdn.jsdelivr.net/npm/jquery-validation@1.17.0/dist/additional-methods.min.js"></script>
+	<script> !function(a){"function"==typeof define&&define.amd?define(["jquery","../jquery.validate.min"],a):"object"==typeof module&&module.exports?module.exports=a(require("jquery")):a(jQuery)}(function(a){return a.extend(a.validator.messages,{required:"Полето е задължително.",remote:"Моля, въведете правилната стойност.",email:"Моля, въведете валиден email.",url:"Моля, въведете валидно URL.",date:"Моля, въведете валидна дата.",dateISO:"Моля, въведете валидна дата (ISO).",number:"Моля, въведете валиден номер.",digits:"Моля, въведете само цифри.",creditcard:"Моля, въведете валиден номер на кредитна карта.",equalTo:"Моля, въведете същата стойност отново.",extension:"Моля, въведете стойност с валидно разширение.",maxlength:a.validator.format("Моля, въведете не повече от {0} символа."),minlength:a.validator.format("Моля, въведете поне {0} символа."),rangelength:a.validator.format("Моля, въведете стойност с дължина между {0} и {1} символа."),range:a.validator.format("Моля, въведете стойност между {0} и {1}."),max:a.validator.format("Моля, въведете стойност по-малка или равна на {0}."),min:a.validator.format("Моля, въведете стойност по-голяма или равна на {0}.")}),a}); </script>
+    ';
+    if($addedRep == 1)
+    {
+        $buffer.= "<h2>Касовата бележка беше регистрирана успешно!</h2>";
+    }
+    elseif($addedRep == 2)
+    {
+        $buffer.= "<h2>Касовата бележка вече е регистрирана!</h2>";
+    }
+	 
+   $buffer.=' <form id="input_receipt" method="post" >
+    <ul style="list-style-type: none;">
+    <li>
     <label for="receipt_number" >Въведи номер от касова бележка: *</label>
     <br>
     <input type="number" value="" min="0" id="receipt_number" name="receipt_number">
     </li>
-    <li class="form__row">
+    <li>
     <label for="receipt_total" >Въведи сумата от задължително закупен продукт, обозначена на касовата бележка *</label>
      <br>
     <input type="text" value="" min="0" step="0.01" id="receipt_total" name="receipt_total">
@@ -313,12 +373,12 @@ function mg_rg_display_input_html()
     <label for="names">Три имена: *</label> <br>
     <input type="text" value="" id="names" name="names">
     </li>
-    <li class="form__row">
-    <label for="phone">МОБИЛЕН НОМЕР: *</label> <br>
+    <li>
+    <label for="phone">Мобилен номер: *</label> <br>
     <input type="number" value="" id="phone" name="phone">
     </li>
-    <li class="form__row">
-    <label for="email" class="form__label">E-MAIL: *</label> <br>
+    <li>
+    <label for="email" class="form__label">Имейл: *</label> <br>
     <input type="email" value="" id="email" name="email">
     </li>
     
@@ -329,7 +389,7 @@ function mg_rg_display_input_html()
     </label>
     </li>
     
-    <li class="form__row form__row_compact">
+    <li>
     <label class="checkbox">
     <input type="checkbox" name="agree_2" class="checkbox__input" data-error="Полето е задължително">
     <span class="checkbox__text">Ако си съгласен/-а с <a href="https://www.rois.bg/igra-hrrupss#tab-terms" target="_blank">Официалните правила на играта</a> и желаеш да участваш, моля, отбележи в квадратчето.</span>
@@ -337,7 +397,7 @@ function mg_rg_display_input_html()
     </li>
     <li class="form__row">
     <label class="checkbox parsley-error">
-    <input type="checkbox" name="agree_3" class="checkbox__input" data-error="Полето е задължително">
+    <input type="checkbox" name="agree_3">
     <span class="checkbox__text">Имам навършени 18 години.</span>
     </label>
     </li>
@@ -347,9 +407,49 @@ function mg_rg_display_input_html()
     </li>
     </ul>
     </form>
+';
     
-    <?php 
-   // return "<h1> shorttttt </h1>";
+    
+    $buffer.='<script>
+		 
+			  //FORM VALIDATION
+
+    $("#input_receipt").validate({
+        rules: {
+					receipt_number:{
+                required: true,
+                minlength: 3
+						},
+					receipt_total:{
+                required: true,
+						},	
+	               names:{
+                required: true,
+                minlength: 10
+						},
+					phone:{
+                required: true,
+                minlength: 9,
+                maxlength: 9
+						},
+                    email:{
+                required: true,
+						},
+					agree_1:{
+                required: true,
+						},
+                    agree_2:{
+                required: true,
+						},
+                    agree_3:{
+                required: true,
+						}
+
+        }
+
+    });
+			</script>';
+    return $buffer;
 }
 
 
