@@ -228,7 +228,59 @@ function mg_rg_prizes_html()
 
 function mg_rg_winners_html()
 {
-    echo "winners page";
+    if(!is_admin())
+    {
+        exit;
+    }
+    global $wpdb;
+    $winnersArr = false;
+    
+    $table_name = $wpdb->prefix . "mg_rg_winners";
+    
+    $winnersArr = $wpdb->get_results(
+    "
+    	SELECT *
+    	FROM $table_name
+        ORDER BY id DESC
+	");
+        
+    
+    
+   
+    ?>
+    
+    <div class="wrap">
+   	<h2>Печеливши</h2><br>
+
+   <table class="widefat">
+   	<thead> <tr> <th>Име</th> <th>Телефон</th><th>Имейл</th> <th>Спечелена награда</th></tr> </thead>
+   	<tfoot> <tr> <th>Име</th> <th>Телефон</th><th>Имейл</th> <th>Спечелена награда</th></tr> </tfoot>
+   	<tbody>
+	<?php 
+	/*
+	if($winnersArr)
+	{
+	    foreach ( $winnersArr as $winner )
+	    {
+	        echo "<tr>";
+	        echo "<td>$winner->name </td>";
+	        echo "<td>$winner->mobile </td>";
+	        echo "<td>$winner->email </td>";
+	        
+	        //get prizename by prizeid
+	        echo "<td>$winner->prize_name </td>";
+	        echo "</tr>";
+	    }
+	}*/
+	
+	?>
+   	
+   	</tbody>
+   	
+   	</table>
+   	
+   	</div>
+    <?php
 }
 
 function mg_rg_activate()
@@ -292,6 +344,7 @@ register_activation_hook(__FILE__,'mg_rg_activate'); //1st param is the main plu
 function mg_rg_shortocdes()
 {
     add_shortcode('display_input_form', 'mg_rg_display_input_html');
+    add_shortcode('display_output_winners', 'mg_rg_display_output_winners');
 }
 
 add_action('init', 'mg_rg_shortocdes');
@@ -375,7 +428,8 @@ function mg_rg_display_input_html()
     </li>
     <li>
     <label for="phone">Мобилен номер: *</label> <br>
-    <input type="number" value="" id="phone" name="phone">
+    <input type="number" value="359" readonly style="width: 70px; display:inline;">
+    <input type="number" value="" id="phone" name="phone" style="width: 90%;display:inline;">
     </li>
     <li>
     <label for="email" class="form__label">Имейл: *</label> <br>
@@ -449,6 +503,46 @@ function mg_rg_display_input_html()
 
     });
 			</script>';
+    return $buffer;
+}
+
+function mg_rg_display_output_winners()
+{
+    global $wpdb;
+    //mg_rg_winners table
+    $table_name = $wpdb->prefix . "mg_rg_winners";
+    $winnersArr = false;
+    $winnersArr = $wpdb->get_results(
+        "
+            	SELECT *
+            	FROM $table_name
+                ORDER BY id DESC
+        	");
+    $buffer = '';
+    
+    //display all primary winners
+    $buffer.='
+    <table>
+   	<thead> <tr> <th>Име</th> <th>Телефон</th><th>Имейл</th> <th>Спечелена награда</th></tr> </thead>
+   	<tfoot> <tr> <th>Име</th> <th>Телефон</th><th>Имейл</th> <th>Спечелена награда</th></tr> </tfoot>
+   	<tbody>'; /*
+    if($winnersArr)
+	{
+	    foreach ( $winnersArr as $winner )
+	    {
+	        echo "<tr>";
+	        echo "<td>$winner->name </td>";
+	        echo "<td>$winner->mobile </td>";
+	        echo "<td>$winner->email </td>";
+	        
+	        //get prizename by prizeid
+	        echo "<td>$winner->prize_name </td>";
+	        echo "</tr>";
+	    }
+	}*/
+   	
+   $buffer.='</tbody></table>';
+
     return $buffer;
 }
 
