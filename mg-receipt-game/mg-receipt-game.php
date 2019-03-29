@@ -1,9 +1,9 @@
-<?php 
+<?php
 /*
  *Plugin Name: Receipt Game
  */
-    
-       
+
+
 function mg_rg_init_menu()
 {
     
@@ -35,9 +35,7 @@ function mg_rg_init_menu()
         'mg_rg_winners_html'
         );
 }
-
 add_action('admin_menu','mg_rg_init_menu');
-
 function mg_rg_main_menu_html()
 {
     if(!is_admin())
@@ -47,7 +45,7 @@ function mg_rg_main_menu_html()
     global $wpdb;
     $registeredArr = false;
     
-    $table_name = $wpdb->prefix . "mg_rg_register"; 
+    $table_name = $wpdb->prefix . "mg_rg_register";
     
     /*Start adding new receipt */
     if(array_key_exists('submit_new_register',$_POST))
@@ -76,7 +74,7 @@ function mg_rg_main_menu_html()
                 );
             if($boolin != false)
             {
-                 ?>
+                ?>
                 <div id="setting-error-settings-updated" class="updated_settings_error notice is-dismissible"><strong>Касовата бележка е добавена успешно.</strong></div>
                 <?php
             }
@@ -147,7 +145,6 @@ function mg_rg_main_menu_html()
         	SELECT *
         	FROM $table_name
             ORDER BY price ASC");
-
          }
         else
         {
@@ -220,12 +217,110 @@ function mg_rg_main_menu_html()
    	</div>
     <?php
 }
-
 function mg_rg_prizes_html()
 {
-    echo "prizes page";
+    if(!is_admin())
+    {
+        exit;
+    }
+    global $wpdb;
+    $prizesArr = false;
+    
+    $table_name = $wpdb->prefix . "mg_rg_prizes";
+    
+    /*Start adding new item */
+    if(array_key_exists('submit_new_prize',$_POST))
+    {
+        if(isset($_POST["name"])&&!empty($_POST["name"])
+            &&isset($_POST["quantity"])&&!empty($_POST["quantity"])
+            &&isset($_POST["small"])&&!empty($_POST["small"]))
+        {
+            $name = $_POST["name"];
+            $quantity = $_POST["quantity"];
+            $small = $_POST["small"];
+            
+            $boolin = $wpdb->insert(
+                $table_name,
+                array(
+                    'name' => $name,
+                    'quantity' => $quantity,
+                    'small' => $small                  
+                )
+                );
+            if($boolin != false)
+            {
+                ?>
+                <div id="setting-error-settings-updated" class="updated_settings_error notice is-dismissible"><strong>Наградата е добавена успешно.</strong></div>
+                <?php
+            }
+            else{     
+                 ?>
+                <div id="setting-error-settings-updated" class="updated_settings_error notice is-dismissible"><strong>Наградата не е добавена.</strong></div>
+                <?php       
+            }
+        }
+        else if(isset($_POST["name"])||isset($_POST["quantity"])||isset($_POST["small"]))
+        {
+            ?>
+            <div id="setting-error-settings-updated" class="updated_settings_error notice is-dismissible"><strong>Въведете всички полета!</strong></div>
+            <?php   
+        }
+    }
+    /*End adding new prize */
+    
+   
+  
+    $prizesArr = $wpdb->get_results(
+    "
+    	SELECT *
+    	FROM $table_name
+        ORDER BY id DESC
+	");
+        
+    
+    
+   
+    ?>
+    
+    <div class="wrap">
+   	<h2>Регистрирани награди</h2><br>
+   	<form method="post" action="">	
+   	<h4>Добвяне на нова награда - Въведи всички полета</h4>
+   	<label for="name" class="form__label">Име на награда: </label>
+   	<input type="text" value="" id="name"  name="name"> 
+   	<label for="quantity">Брой: </label>
+   	<input type="number" value="" id="quantity" name="quantity">
+   	<label for="small">1 - Малка | 2 - Голяма: </label>
+   	<input type="number" value="" id="small" name="small">
+   	<input type="submit" name="submit_new_prize" class="button button-primary" value="Добави">
+   	</form><br>
+   	<table class="widefat">
+   	<thead> <tr> <th>Id</th> <th>Name</th><th>Quantity</th> <th>Small</th> </tr> </thead>
+   	<tfoot> <tr> <th>Id</th> <th>Name</th><th>Quantity</th> <th>Small</th></tr> </tfoot>
+   	<tbody>
+	<?php 
+	if($prizesArr)
+	{
+	    foreach ( $prizesArr as $prize )
+	    {
+	        echo "<tr>";
+	        echo "<td>$prize->id </td>";
+	        echo "<td>$prize->name </td>";
+	        echo "<td>$prize->quantity </td>";
+	        echo "<td>$prize->small </td>";
+	        echo "</tr>";
+	    }
+	}
+	
+	?>
+   	
+   	</tbody>
+   	
+   	</table>
+   	
+   	</div>
+    <?php
 }
-
 function mg_rg_winners_html()
 {
     if(!is_admin())
@@ -282,7 +377,6 @@ function mg_rg_winners_html()
    	</div>
     <?php
 }
-
 function mg_rg_activate()
 {
    global $wpdb;
@@ -303,18 +397,16 @@ function mg_rg_activate()
     )$charset_collate";
     
     //prizes
-   /* $table_name2 = $wpdb->prefix . "mg_rg_prizes";
+    $table_name2 = $wpdb->prefix . "mg_rg_prizes";
     $charset_collate2 = $wpdb->get_charset_collate();
     
-    $sql2 = "CREATE TABLE IF NOT EXISTS $table_name (
+    $sql2 = "CREATE TABLE IF NOT EXISTS $table_name2 (
     id int NOT NULL AUTO_INCREMENT ,
-    receipt int NOT NULL ,
-    price float NOT NULL ,
     name varchar(255) NOT NULL ,
-    email varchar(255) NOT NULL ,
-    mobile int NOT NULL ,
-     PRIMARY KEY (id), UNIQUE (receipt)
-    )$charset_collate";*/
+    quantity int NOT NULL ,
+    small int NOT NULL ,
+     PRIMARY KEY (id)
+    )$charset_collate";
     
     //winners
     $table_name3 = $wpdb->prefix . "mg_rg_winners";
@@ -333,22 +425,17 @@ function mg_rg_activate()
    //$bool = $wpdb->query($sql);
    
    dbDelta( $sql ); //registered
-  // dbDelta( $sql2 ); //prizes
+   dbDelta( $sql2 ); //prizes
    dbDelta( $sql3 ); //winners
 }
 register_activation_hook(__FILE__,'mg_rg_activate'); //1st param is the main plugin file
-
-
 /* Shortcodes section */
-
 function mg_rg_shortocdes()
 {
     add_shortcode('display_input_form', 'mg_rg_display_input_html');
     add_shortcode('display_output_winners', 'mg_rg_display_output_winners');
 }
-
 add_action('init', 'mg_rg_shortocdes');
-
 function mg_rg_display_input_html()
 {
     
@@ -393,9 +480,7 @@ function mg_rg_display_input_html()
     $buffer ='
 <script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
 		crossorigin="anonymous"></script>
-
 		<!-- Validation plugin -->
-
 		<script src="https://cdn.jsdelivr.net/npm/jquery-validation@1.17.0/dist/jquery.validate.min.js"></script>
 		<script src="https://cdn.jsdelivr.net/npm/jquery-validation@1.17.0/dist/additional-methods.min.js"></script>
 	<script> !function(a){"function"==typeof define&&define.amd?define(["jquery","../jquery.validate.min"],a):"object"==typeof module&&module.exports?module.exports=a(require("jquery")):a(jQuery)}(function(a){return a.extend(a.validator.messages,{required:"Полето е задължително.",remote:"Моля, въведете правилната стойност.",email:"Моля, въведете валиден email.",url:"Моля, въведете валидно URL.",date:"Моля, въведете валидна дата.",dateISO:"Моля, въведете валидна дата (ISO).",number:"Моля, въведете валиден номер.",digits:"Моля, въведете само цифри.",creditcard:"Моля, въведете валиден номер на кредитна карта.",equalTo:"Моля, въведете същата стойност отново.",extension:"Моля, въведете стойност с валидно разширение.",maxlength:a.validator.format("Моля, въведете не повече от {0} символа."),minlength:a.validator.format("Моля, въведете поне {0} символа."),rangelength:a.validator.format("Моля, въведете стойност с дължина между {0} и {1} символа."),range:a.validator.format("Моля, въведете стойност между {0} и {1}."),max:a.validator.format("Моля, въведете стойност по-малка или равна на {0}."),min:a.validator.format("Моля, въведете стойност по-голяма или равна на {0}.")}),a}); </script>
@@ -467,7 +552,6 @@ function mg_rg_display_input_html()
     $buffer.='<script>
 		 
 			  //FORM VALIDATION
-
     $("#input_receipt").validate({
         rules: {
 					receipt_number:{
@@ -498,14 +582,11 @@ function mg_rg_display_input_html()
                     agree_3:{
                 required: true,
 						}
-
         }
-
     });
 			</script>';
     return $buffer;
 }
-
 function mg_rg_display_output_winners()
 {
     global $wpdb;
@@ -542,9 +623,6 @@ function mg_rg_display_output_winners()
 	}*/
    	
    $buffer.='</tbody></table>';
-
     return $buffer;
 }
-
-
 ?>
