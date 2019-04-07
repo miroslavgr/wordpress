@@ -1,3 +1,37 @@
+block element - <br> before and after it, and full width, can have width and height
+inline element - cannot have width and height
+
+box-sizing:border-box - always use if set width % and paddings borders
+
+html{
+  box-sizing:border-box
+}
+
+*, *:before, *:after{
+ box-sizing:inherit; 
+}
+
+if useing float , alwaus :after clear:both
+
 line-height: 1.5;
 sans-serif - pechaten shrift
 monospace - every character same size
+
+text-decoration:none - removes underline
+
+display:none
+display:block
+display:inline-block
+
+color: F000 - text color
+background: green  - background color
+
+pseudo classes
+:hover
+:active  - clicked
+
+div  - block elements take full width and the needed height
+{
+     height:20px;
+    overflow:hidden; - makes no overflow of anything over the specified height
+}
