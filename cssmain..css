@@ -1,7 +1,43 @@
-block element - <br> before and after it, and full width, can have width and height
-inline element - cannot have width and height
+block - <br> before and after it, and full width, can have width and height
+inline - cannot have width and height ,padding and margins will not afftect the block elements
+inline-block - like block but NO new lines before and after
+if useing float , alwaus :after clear:both
 
+/*Start Overriding and inheritance */
+
+properties override other properties, but you don't get entire rules overriding other rules!
+
+cascading order + specifity
+!important
+inline - 1000
+id - 100
+class - 10
+element - 1
+
+The only way to override this !important declaration would be to include another !important declaration of the same
+specificity later in the source order, or one with a higher specificity.
+
+Inheritance
+there are naturally inherited styles like color and font
+and not naturally inherited like padding, margin
+
+inherit - from parent
+initial - from browser
+unset - natural
+/* End Overriding and inheritance */
+
+/* Start Box Model  */
+Block Box
+margin - 2 boxes margin touch collapse - fight , the biggest margin set the whole distance , not their sum
+border - default 0px
+padding
+content - has width and height + other boxes child elements
+
+width = width(content) + padding + border
 box-sizing:border-box - always use if set width % and paddings borders
+- this set the width value to expand to the border
+
+% can not be set to height and borders, only absolute value
 
 html{
   box-sizing:border-box
@@ -10,12 +46,36 @@ html{
 *, *:before, *:after{
  box-sizing:inherit; 
 }
+-=-
 
-if useing float , alwaus :after clear:both
+/* End Box Model */
+
+/*Start Overflow cases*/
+block BOX
+When width/heiht is set with absolute value, content may overflow
+
+overflow: auto;    
+overflow: hidden;  
+overflow: visible; 
+
+auto: If there is too much content, the overflowing content is hidden and scroll bars are shown to let the user scroll to see all the content.
+hidden: If there is too much content, the overflowing content is hidden.
+visible: If there is too much content, the overflowing content is shown outside of the box (this is usually the default behavior.)
+
+/*End Overflow cases*/
+
+/*Start Backcground */
+block BOX
+by default the background extends to the outer edge of the border
+background-image: url('');
+background-color: gold;
+
+background-clip: border-box;  - default extend to outer edge border
+background-clip: padding-box; - extend to inner edge border
+background-clip: content-box; - extend to only content
+/*End Background */
 
 line-height: 1.5;
-sans-serif - pechaten shrift
-monospace - every character same size
 
 text-decoration:none - removes underline
 
@@ -24,7 +84,7 @@ display:block
 display:inline-block
 
 color: F000 - text color
-background: green  - background color
+background: green  - background color/images by default extend to the border
 
 pseudo classes
 :hover
