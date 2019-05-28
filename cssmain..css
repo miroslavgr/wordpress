@@ -58,11 +58,26 @@ cleaner class for floats
   content: '';
   clear:both;
 }
+
+position: relative - from the current eleme
+position: absolute - from parent relative/absolute or body
+position: fixed - from viewport
+top:
+bottom:
+left:
+right:
+
+width:30px - fixed
+max-width:30px - responsive ( no need of media query)
 /* End Box Model */
 
 /*Start Overflow cases*/
 block BOX
 When width/heiht is set with absolute value, content may overflow
+
+/*Control horizntal and vertical specific */
+overflow-x:
+overflow-y:
 
 overflow: auto;    
 overflow: hidden;  
@@ -105,3 +120,7 @@ div  - block elements take full width and the needed height
      height:20px;
     overflow:hidden; - makes no overflow of anything over the specified height
 }
+
+images best practice class
+max-width: 100%;
+height: auto;             
