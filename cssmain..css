@@ -48,6 +48,15 @@ html{
 }
 -=-
 
+cleaner class for floats
+
+.cleaner:after
+{
+  display:block;
+  height:0px;
+  content: '';
+  clear:both;
+}
 /* End Box Model */
 
 /*Start Overflow cases*/
