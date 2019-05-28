@@ -48,6 +48,7 @@ html{
 }
 -=-
 
+if !cleaner , float elements are not icluded in size calculation of parent
 cleaner class for floats
 
 .cleaner:after
