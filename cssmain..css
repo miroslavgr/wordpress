@@ -3,6 +3,27 @@ inline - cannot have width and height ,padding and margins will not afftect the 
 inline-block - like block but NO new lines before and after
 if useing float , alwaus :after clear:both
 
+:before and :after - create first and last child in the current element
+content is simple text
+cannot be added html there
+
+/*Start flexbox */
+Flex Container Properties
+display:flex - makes it flexbox
+flex-direction: row | row-reverse | column | column-reverse    - tells how to show items
+flew-wrap: wrap | no-wrap | wrap-reverse -  by default is no-wrap, must make wrap if want to go on next row
+flex-flow: flex-direction | flex-wrap
+justify-content: flex-start | flex-end | center | space-between | space-around | space-evenly
+align-items: flex-start | flex-end | center | baseline | stretch
+
+Flex Items Properties
+order: int
+flex-grow: int
+flex-shrink: int
+flex-basis: int
+flex: none | [flex-grow flex-shrink | | flex-basis]
+/*End flexbox */
+
 /*Start Overriding and inheritance */
 
 properties override other properties, but you don't get entire rules overriding other rules!
@@ -124,3 +145,4 @@ div  - block elements take full width and the needed height
 images best practice class
 max-width: 100%;
 height: auto;             
+
