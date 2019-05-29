@@ -18,8 +18,8 @@ align-items: flex-start | flex-end | center | baseline | stretch
 
 Flex Items Properties
 order: int
-flex-grow: int
-flex-shrink: int
+flex-grow: int - expand when can
+flex-shrink: int - get tiny if needed
 flex-basis: int
 flex: none | [flex-grow flex-shrink | | flex-basis]
 /*End flexbox */
