@@ -146,3 +146,9 @@ images best practice class
 max-width: 100%;
 height: auto;             
 
+/*Start media queries */
+@media only screen and (min-width:600px)
+{
+  
+}
+/*End media queries */
