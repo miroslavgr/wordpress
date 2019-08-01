@@ -146,6 +146,10 @@ images best practice class
 max-width: 100%;
 height: auto;             
 
++ - direct siblings
+> direct childs
+
+
 /*Start media queries */
 @media only screen and (min-width:600px)
 {
