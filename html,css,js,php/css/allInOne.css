@@ -1,0 +1,213 @@
+block - <br> before and after it, and full width, can have width and height
+inline - cannot have width and height ,padding and margins will not afftect the block elements
+inline-block - like block but NO new lines before and after
+if useing float , alwaus :after clear:both
+
+:before and :after - create first and last child in the current element
+content is simple text
+cannot be added html there
+
+/*Start flexbox */
+Flex Container Properties
+display:flex - makes it flexbox
+flex-direction: row | row-reverse | column | column-reverse    - tells how to show items
+flew-wrap: wrap | no-wrap | wrap-reverse -  by default is no-wrap, must make wrap if want to go on next row
+flex-flow: flex-direction | flex-wrap
+justify-content: flex-start | flex-end | center | space-between | space-around | space-evenly
+align-items: flex-start | flex-end | center | baseline | stretch
+
+Flex Items Properties
+order: int
+flex-grow: int - expand when can
+flex-shrink: int - get tiny if needed
+flex-basis: int
+flex: none | [flex-grow flex-shrink | | flex-basis]
+/*End flexbox */
+
+/*Start Overriding and inheritance */
+
+properties override other properties, but you don't get entire rules overriding other rules!
+
+cascading order + specifity
+!important
+inline - 1000
+id - 100
+class - 10
+element - 1
+
+The only way to override this !important declaration would be to include another !important declaration of the same
+specificity later in the source order, or one with a higher specificity.
+
+Inheritance
+there are naturally inherited styles like color and font
+and not naturally inherited like padding, margin
+
+inherit - from parent
+initial - from browser
+unset - natural
+/* End Overriding and inheritance */
+
+/* Start Box Model  */
+Block Box
+margin - 2 boxes margin touch collapse - fight , the biggest margin set the whole distance , not their sum
+border - default 0px
+padding
+content - has width and height + other boxes child elements
+
+width = width(content) + padding + border
+box-sizing:border-box - always use if set width % and paddings borders
+- this set the width value to expand to the border
+
+% can not be set to height and borders, only absolute value
+
+html{
+  box-sizing:border-box
+}
+
+*, *:before, *:after{
+ box-sizing:inherit; 
+}
+-=-
+
+if !cleaner , float elements are not icluded in size calculation of parent
+cleaner class for floats
+
+.cleaner:after
+{
+  display:block;
+  height:0px;
+  content: '';
+  clear:both;
+}
+
+position: relative - from the current eleme
+position: absolute - from parent relative/absolute or body
+position: fixed - from viewport
+top:
+bottom:
+left:
+right:
+
+width:30px - fixed
+max-width:30px - responsive ( no need of media query)
+/* End Box Model */
+
+/*Start Overflow cases*/
+block BOX
+When width/heiht is set with absolute value, content may overflow
+
+/*Control horizntal and vertical specific */
+overflow-x:
+overflow-y:
+
+overflow: auto;    
+overflow: hidden;  
+overflow: visible; 
+
+auto: If there is too much content, the overflowing content is hidden and scroll bars are shown to let the user scroll to see all the content.
+hidden: If there is too much content, the overflowing content is hidden.
+visible: If there is too much content, the overflowing content is shown outside of the box (this is usually the default behavior.)
+
+/*End Overflow cases*/
+
+/*Start Backcground */
+block BOX
+by default the background extends to the outer edge of the border
+background-image: url('');
+background-color: gold;
+
+background-clip: border-box;  - default extend to outer edge border
+background-clip: padding-box; - extend to inner edge border
+background-clip: content-box; - extend to only content
+/*End Background */
+
+line-height: 1.5;
+
+text-decoration:none - removes underline
+
+display:none
+display:block
+display:inline-block
+
+color: F000 - text color
+background: green  - background color/images by default extend to the border
+
+pseudo classes
+:hover
+:active  - clicked
+
+div  - block elements take full width and the needed height
+{
+     height:20px;
+    overflow:hidden; - makes no overflow of anything over the specified height
+}
+
+images best practice class
+max-width: 100%;
+height: auto;             
+
++ - direct siblings
+> direct childs
+
+
+/*Start media queries */
+@media only screen and (min-width:600px)
+{
+  
+}
+/*End media queries */
+
+
+
+
+
+
+
+
+attributes - key value pairs
+
+element selectors
+h1 {
+    text-align:center;
+}
+
+id selectors
+#header {
+    border: 1px solid;
+}
+
+class selectors
+.mod .otherclass{
+    
+}
+
+class + element selector 
+p.right{
+    //all paragraphs with class right
+}
+
+element + attribute selector 
+a[title]{
+    // all a tags with title attribute
+}
+
+element + pseudo class
+a:hover {
+    on hover
+}
+
+<h1 id="header" class="intro"></h1>
+
+h1#header.intro{
+
+}
+
+!important can override inline style 
+
+Who is stronger for the same tag?
+
+1. !important
+2. inline
+3. id
+4. class
+5. element selector 
