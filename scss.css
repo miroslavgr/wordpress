@@ -1,0 +1,23 @@
+sass-lang.com
+
+&:hover - parent hover
+
+& stays for parent
+
+%box-shadow{styles}
+
+a
+{
+  @extends %box-shadow; -- add it like a string variable
+}
+
+Variables - same like php but instead of = we use :
+their scope are at the level where defined and below, if defined outside of anything they become global
+or if nsted can make it !global and use it anywhere, like php.
+
+$width : 5px;
+
+#main 
+{
+  wdith: $width 
+}
