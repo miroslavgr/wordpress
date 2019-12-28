@@ -28,6 +28,9 @@ $order->add_meta_data( 'PayPal Transaction Fee', wc_clean( $posted['mc_fee'] ) )
 $order->get_meta( '_paypal_status', true )  // geta meta of an order
 update_post_meta( $order->get_id(), '_paypal_status', $result->PAYMENTSTATUS );
   
+//setters
+$order->payment_complete( $txn_id );
+
 //fields
 $order->get_billing_first_name();
 $order->get_billing_last_name();
@@ -44,4 +47,8 @@ $order->get_billing_phone();
 $order->get_total();
 $order->get_shipping_total();
 $order->get_shipping_tax();
+$order->get_total_discount();
+$order->get_total_tax();
+foreach ( $order->get_items() as $item )
+	$order->get_item_subtotal( $item, false )
 >?
