@@ -91,4 +91,9 @@ $terms = wp_get_post_terms(get_the_id(),'product_cat', $args);
         wc_get_template_part( 'content', 'product' );
     }
 }
+
+Woocommerce contribute
+includes/class-wc-order.php line 168 
+	$tax_string_array[] = sprintf( '%s %s', $tax_amount, WC()->countries->tax_or_vat() );
+
 ?>
