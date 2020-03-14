@@ -92,6 +92,10 @@ $terms = wp_get_post_terms(get_the_id(),'product_cat', $args);
     }
 }
 
+//Main woocommerce function which adds to cart, can attach filters there
+add_to_cart()
+
+
 Woocommerce contribute
 includes/class-wc-order.php line 168 
 	$tax_string_array[] = sprintf( '%s %s', $tax_amount, WC()->countries->tax_or_vat() );
