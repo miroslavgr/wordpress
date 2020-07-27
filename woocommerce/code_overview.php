@@ -79,21 +79,61 @@ $product->get_average_rating();
 $product->get_review_count();
 
 /*WC_Order*/
+//  Order Data array. This is the core order data exposed in APIs since 3.0.0.
 protected $data = array(
-	'parent_id'          => 0,
-	'status'             => '',
-	'currency'           => '',
-	'version'            => '',
-	'prices_include_tax' => false,
-	'date_created'       => null,
-	'date_modified'      => null,
-	'discount_total'     => 0,
-	'discount_tax'       => 0,
-	'shipping_total'     => 0,
-	'shipping_tax'       => 0,
-	'cart_tax'           => 0,
-	'total'              => 0,
-	'total_tax'          => 0,
+	// Abstract order props.
+	'parent_id'            => 0,
+	'status'               => '',
+	'currency'             => '',
+	'version'              => '',
+	'prices_include_tax'   => false,
+	'date_created'         => null,
+	'date_modified'        => null,
+	'discount_total'       => 0,
+	'discount_tax'         => 0,
+	'shipping_total'       => 0,
+	'shipping_tax'         => 0,
+	'cart_tax'             => 0,
+	'total'                => 0,
+	'total_tax'            => 0,
+
+	// Order props.
+	'customer_id'          => 0,
+	'order_key'            => '',
+	'billing'              => array(
+		'first_name' => '',
+		'last_name'  => '',
+		'company'    => '',
+		'address_1'  => '',
+		'address_2'  => '',
+		'city'       => '',
+		'state'      => '',
+		'postcode'   => '',
+		'country'    => '',
+		'email'      => '',
+		'phone'      => '',
+	),
+	'shipping'             => array(
+		'first_name' => '',
+		'last_name'  => '',
+		'company'    => '',
+		'address_1'  => '',
+		'address_2'  => '',
+		'city'       => '',
+		'state'      => '',
+		'postcode'   => '',
+		'country'    => '',
+	),
+	'payment_method'       => '',
+	'payment_method_title' => '',
+	'transaction_id'       => '',
+	'customer_ip_address'  => '',
+	'customer_user_agent'  => '',
+	'created_via'          => '',
+	'customer_note'        => '',
+	'date_completed'       => null,
+	'date_paid'            => null,
+	'cart_hash'            => '',
 );
 additional data
 array(
@@ -104,11 +144,13 @@ array(
 	'fee_lines'      => $this->get_items( 'fee' ),
 	'coupon_lines'   => $this->get_items( 'coupon' ),
 )
-	
+
+/*WC_Abstract_Order Abstract class All public functions */
 $order = wc_get_order( $order_id ); // post id == order id
 
 //Getters	
-$order->get_data() // returns both merged
+$order->get_data() // Get all class data in array format.
+$order->get_base_data() // Get basic order data in array format.
 $order->get_parent_id();
 $order->get_currency();
 $order->get_version();
@@ -128,15 +170,93 @@ $order->get_total_tax();
 $order->get_total_discount($ex_tax = true); // Gets the total discount amount.
 $order->get_subtotal(); // Gets order subtotal.
 $order->get_tax_totals(); // Get taxes, merged by code, formatted ready for output
-$order->get_valid_statuses(); // Get all valid statuses for this order
 
-//setters
+//setters - these should not update anything in the databse but only in the data arrays
+$order->set_parent_id( $value );
+$order->set_status( $new_status ); //Set order status
+$order->update_status( $new_status, $note = '', $manual = false ); //Updates status of order immediately. Uses set_status()
+$order->maybe_set_date_paid(); // Maybe set date paid.
+$order->set_version( $value ); // Set order_version.
+$order->set_currency( $value ); // Set order_currency.
+$order->set_prices_include_tax( $value ); // Set prices_include_tax.
+$order->set_date_created( $date = null );
+$order->set_date_modified( $date = null );
+$order->set_discount_total( $value );
+$order->set_discount_tax( $value );
+$order->set_shipping_total( $value );
+$order->set_shipping_tax( $value );
+$order->set_cart_tax( $value );
+$order->set_total( $value, $deprecated = '' );
+
+// Order item handling functions, used for products, taxes, shipping, and fees within each order
+$item == product, shipping, fee, coupon, tax
+$order->remove_order_items( $type = null ); // Remove all line items (products, coupons, shipping, taxes) from the order.
+$order->get_items( $types = 'line_item' ); // Return an array of items/products within this order.
+$order->get_coupons(); // Return an array of coupons within this order.
+$order->get_fees(); // Return an array of fees within this order.
+$order->get_taxes(); // Return an array of taxes within this order.
+$order->get_shipping_methods(); // Return an array of shipping costs within this order.
+$order->get_shipping_method(); // Gets formatted shipping method title.
+$order->get_coupon_codes(); // Get used coupon codes only.
+$order->get_item_count( $item_type = '' ); // Gets the count of order items of a certain type.
+$order->get_item( $item_id, $load_from_db = true ); // Get an order item object, based on its type.
+//must save order to persist remove/add !
+$order->remove_item( $item_id ); // Remove item from the order.
+$order->add_item( $item ); // Adds an order item to this order. The order item will not persist until save.
+$order->hold_applied_coupons( $billing_email ); // Check and records coupon usage tentatively so that counts validation is correct
+$order->apply_coupon( $raw_coupon ); // Apply a coupon to the order and recalculate totals.
+$order->remove_coupon( $code ); // Remove a coupon from the order and recalculate totals.
+$order->recalculate_coupons(); // Apply all coupons in this order again to all line items.
+$order->add_product( $product, $qty = 1, $args = array() ); //Add a product line item to the order. This is the only line item type with its own method because it saves looking up order amounts (costs are added up for you).
+
+//payment tokens handling - Payment tokens are hashes used to take payments by certain gateways.
+$order->add_payment_token( $token ); // Add a payment token to an order
+$order->get_payment_tokens(); // Returns a list of all payment tokens associated with the current order
+
+//calculations
+$order->calculate_shipping(); // Calculate shipping total.
+$order->get_items_tax_classes(); // Get all tax classes for items in the order.
+$order->calculate_taxes( $args = array()); // Calculate taxes for all line items and shipping, and store the totals and tax rows.
+$order->get_total_fees(); // Calculate fees for all line items.
+$order->update_taxes(); // Update tax lines for the order based on the line item taxes themselves.
+$order->calculate_totals( $and_taxes = true ); //Calculate totals by looking at the contents of the order. Stores the totals and returns the orders final total.
+get_item_subtotal( $item, $inc_tax = false, $round = true ); // Get item subtotal - this is the cost before discount.
+get_line_subtotal( $item, $inc_tax = false, $round = true ); // Get line subtotal - this is the cost before discount.
+get_item_total( $item, $inc_tax = false, $round = true ); // Calculate item cost - useful for gateways.
+get_line_total( $item, $inc_tax = false, $round = true ); // Calculate line total - useful for gateways.
+get_item_tax( $item, $round = true ); // Get item tax - useful for gateways.
+get_line_tax( $item ); // Get line tax - useful for gateways.
+get_formatted_line_subtotal( $item, $tax_display = '' ); // Gets line subtotal - formatted for display.
+
+$order->get_formatted_order_total(); // Gets order total - formatted for display.
+$order->get_subtotal_to_display( $compound = false, $tax_display = '' ); // Gets subtotal - subtotal is shown before discounts, but with localised taxes.
+$order->get_shipping_to_display( $tax_display = '' ); // Gets shipping (formatted).
+$order->get_discount_to_display( $tax_display = '' ); // Get the discount amount (formatted).
+
+$order->get_order_item_totals( $tax_display = '' ); // Get totals for display on pages and in emails.
+
+// booleans
+
+$order->has_status( $status ); // Checks the order status against a passed in status.
+$order->has_shipping_method( $method_id ); // Check whether this order has a specific shipping method or not.
+$order->has_free_item(); // Returns true if the order contains a free product.
+
+/*End Abstract class All public functions */
+
+// WC_Order extending the abstract class, which is being instantiated
+$order->save(); // Save all current data to the database.
+$order->payment_complete( $transaction_id = '' ); //  When a payment is complete this function is called.
+$order->get_status();
+$order->get_discount_total();
 $order->get_discount_tax();
 $order->get_shipping_total();
 $order->get_shipping_tax();
-$order->get_cart_tax();
-$order->get_total();
-$order->get_total_tax();
+
+
+
+
+
+
 
 
 
