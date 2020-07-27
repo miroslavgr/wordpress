@@ -79,7 +79,66 @@ $product->get_average_rating();
 $product->get_review_count();
 
 /*WC_Order*/
+protected $data = array(
+	'parent_id'          => 0,
+	'status'             => '',
+	'currency'           => '',
+	'version'            => '',
+	'prices_include_tax' => false,
+	'date_created'       => null,
+	'date_modified'      => null,
+	'discount_total'     => 0,
+	'discount_tax'       => 0,
+	'shipping_total'     => 0,
+	'shipping_tax'       => 0,
+	'cart_tax'           => 0,
+	'total'              => 0,
+	'total_tax'          => 0,
+);
+additional data
+array(
+	'meta_data'      => $this->get_meta_data(),
+	'line_items'     => $this->get_items( 'line_item' ),
+	'tax_lines'      => $this->get_items( 'tax' ),
+	'shipping_lines' => $this->get_items( 'shipping' ),
+	'fee_lines'      => $this->get_items( 'fee' ),
+	'coupon_lines'   => $this->get_items( 'coupon' ),
+)
+	
 $order = wc_get_order( $order_id ); // post id == order id
+
+//Getters	
+$order->get_data() // returns both merged
+$order->get_parent_id();
+$order->get_currency();
+$order->get_version();
+$order->get_prices_include_tax();
+$order->get_date_created();
+$order->get_date_modified();
+$order->get_status();
+$order->get_discount_total();
+$order->get_discount_tax();
+$order->get_shipping_total();
+$order->get_shipping_tax();
+$order->get_cart_tax();
+$order->get_total();
+$order->get_total_tax();
+
+// non CRUD getter t.e. wrapper functions
+$order->get_total_discount($ex_tax = true); // Gets the total discount amount.
+$order->get_subtotal(); // Gets order subtotal.
+$order->get_tax_totals(); // Get taxes, merged by code, formatted ready for output
+$order->get_valid_statuses(); // Get all valid statuses for this order
+
+//setters
+$order->get_discount_tax();
+$order->get_shipping_total();
+$order->get_shipping_tax();
+$order->get_cart_tax();
+$order->get_total();
+$order->get_total_tax();
+
+
 
 //meta
 $order->add_meta_data( 'PayPal Transaction Fee', wc_clean( $posted['mc_fee'] ) );
