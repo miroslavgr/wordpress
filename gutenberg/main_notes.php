@@ -24,10 +24,23 @@ icon: 'format-image',
 category: 'woocommerce',
 
 //custom attributies
-attributes: {},
+attributes: {
+  author: {
+    type: 'string'
+  }
+},
 //custom functions
 
 //build in functions
-edit() {},
+  
+//this returns the block in the page's back end
+edit({attributes}) {
+
+  // custom functions musst be defined inside the edit
+  
+  //seTaattribute function is saving an attribute run time, attributes are variables for the component
+reutrn <div> { attributes.author } </div>;
+  
+},
 save() {}
 });
