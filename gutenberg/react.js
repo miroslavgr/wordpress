@@ -66,11 +66,55 @@ Also its used to memoriaze the real const objects as adresses, for example we ha
 but products is defined as const products = state.products, use effect will be called on every page render because we are defining
 new object with new adress, for that reason is used useMemo to cache the same objects
 
+useMemo: Returns and stores the calculated value of a function in a variable
+useMemo returns the variable result from the function
+	
+useCallBack: Returns and stores the actual function itself in a variable
+useCallBack returns the function executable as function
+Just use it to create functions only when they depend on the change of some state
+
 useRef(value) - Very similar to state but does not cause any renders 
 ALso second use case is for focusing inputs or things like this ( check video )
 Or used to store previous value of state
 	It just persists values between renders
 Its like a shadow without causing re-render
+
+const createdContext = createContext("my-cars");
+const valueContext = useContaxt(createdContext) - useContext is used to get the state value of a particular context
+	
+make this work with my other context and just use the seeter and getter and see if it works
+	 
+	export const useQueryStateByContext = ( context ) => {
+	const queryStateContext = useQueryStateContext();
+	context = context || queryStateContext;
+	const queryState = useSelect(
+		( select ) => {
+			const store = select( storeKey );
+			return store.getValueForQueryContext( context, undefined );
+		},
+		[ context ]
+	);
+	const { setValueForQueryContext } = useDispatch( storeKey );
+	const setQueryState = useCallback(
+		( value ) => {
+			setValueForQueryContext( context, value );
+		},
+		[ context, setValueForQueryContext ]
+	);
+
+	return [ queryState, setQueryState ];
+};
+	
+useReducer - Its the same as state but here is the deal:
+IF we have a state which will be modiied in many different ways from events
+( add, delete , toggle, the state array items ) - we have to create different functions for
+every different action, and with reducer we can use only 1 function, providing what action we want to do
+after that with switch case perform the action,
+That way we can achieve the state variable changes in only 1 function and have overall better visibility and control of the operations for this state
+MORE IMPORTANTLY in my case if mini my cars i had only 1 component, but if there are nested components we can just pass dispatch and
+children will call it with the correct action, in case of state this becomes very complex
+
+
 
           
 
