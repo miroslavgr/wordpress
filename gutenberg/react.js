@@ -1,4 +1,11 @@
-/*Component */
+
+
+1. /* Overall architecture */
+
+
+
+
+2. /*Components */
 A component is class which extends React.Component
 Every component has a render method which returns an React Object
 Every React Object is being compiled to javascript and html
@@ -6,13 +13,6 @@ Every defined Component becomes like a html tag which executes the Component's r
 
 Components can have Props and State
 State values are defined in the contrusctor of each Component
-
-constructor(props){
-  super(props);
-  this.state = {
-    stateVal: 5,
-  }
-}
 
 //next they are accesed like this anywhere in the class
 this.state.stateVal
@@ -43,6 +43,7 @@ function Square(props) {
     </button>);
 }
 		
+3.
  
 Hooks - used only in function components, never in class component
 		they all must be only at top level in the funcittion and will be executed in the same order as declared
@@ -82,28 +83,6 @@ Its like a shadow without causing re-render
 const createdContext = createContext("my-cars");
 const valueContext = useContaxt(createdContext) - useContext is used to get the state value of a particular context
 	
-make this work with my other context and just use the seeter and getter and see if it works
-	 
-	export const useQueryStateByContext = ( context ) => {
-	const queryStateContext = useQueryStateContext();
-	context = context || queryStateContext;
-	const queryState = useSelect(
-		( select ) => {
-			const store = select( storeKey );
-			return store.getValueForQueryContext( context, undefined );
-		},
-		[ context ]
-	);
-	const { setValueForQueryContext } = useDispatch( storeKey );
-	const setQueryState = useCallback(
-		( value ) => {
-			setValueForQueryContext( context, value );
-		},
-		[ context, setValueForQueryContext ]
-	);
-
-	return [ queryState, setQueryState ];
-};
 	
 useReducer - Its the same as state but here is the deal:
 IF we have a state which will be modiied in many different ways from events
