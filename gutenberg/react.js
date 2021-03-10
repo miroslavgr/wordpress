@@ -1,5 +1,7 @@
 
 
+
+
 1. /* Overall architecture */
 
 
@@ -95,7 +97,15 @@ children will call it with the correct action, in case of state this becomes ver
 
 
 
-          
+          Basics
 
-          
+  React app files structure
+	
+package.json - contains all the dependencies and scripts ( commands )for the project
+for example start in single react app launches react-scripts-start
+and start in woocommerce plugin compiles the code run time\
+	
+// basically we get the javascript object element with vanilla javascript , and render it with a specific component in the reactDOM
+ReactDOM.render( <App/> , document.getElementById("#root"));
+	
   
