@@ -108,4 +108,19 @@ and start in woocommerce plugin compiles the code run time\
 // basically we get the javascript object element with vanilla javascript , and render it with a specific component in the reactDOM
 ReactDOM.render( <App/> , document.getElementById("#root"));
 	
+		
+		
+		
+		
+		
+		
+		
+		
+		
+/* 
+	History and description
+	React is open source javascript library used for bulding UI.
+
+*/		
+		
   
